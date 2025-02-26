@@ -9,6 +9,8 @@
         <option value="$PROJECT_DIR$/backEnd/microservices/candidat/pom.xml" />
         <option value="$PROJECT_DIR$/backEnd/microservices/job/pom.xml" />
         <option value="$PROJECT_DIR$/backEnd/microservices/meeting/pom.xml" />
+        <option value="$PROJECT_DIR$/backEnd/microservices/candidature/pom.xml" />
+        <option value="$PROJECT_DIR$/backEnd/microservices/notification/pom.xml" />
       </list>
     </option>
   </component>
