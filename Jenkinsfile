@@ -2,11 +2,7 @@
 pipeline {
     agent any
     
-     options {
-        // This will clean the workspace before the build starts
-        cleanWs()
-    }
-
+   
     tools {
         // Use the default names that Jenkins recognizes
         maven 'maven' 
@@ -97,8 +93,9 @@ pipeline {
         }
     }
     
-    post {
+       post {
         always {
+            // This is the CORRECT place for cleanWs()
             echo 'Pipeline finished. Cleaning workspace.'
             cleanWs()
         }
@@ -109,4 +106,5 @@ pipeline {
             echo 'Pipeline FAILED!'
         }
     }
+}
 }
