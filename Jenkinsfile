@@ -1,43 +1,55 @@
-// Jenkinsfile for JobBoard - Multi-Module Microservices DevSecOps
+//// Jenkinsfile for JobBoard - Multi-Module Microservices DevSecOps
 pipeline {
     agent any
 
+
+    options {
+        // This prevents Jenkins from doing its own default checkout
+        skipDefaultCheckout(true) 
+    }
+
     tools {
-        // Use the default names that Jenkins recognizes
         maven 'maven' 
         jdk 'JAVA_HOME'
     }
 
     environment {
-        // This will automatically fetch the secret text credential we created in Jenkins
         SONAR_AUTH_TOKEN = credentials('sonarqube-token') 
     }
 
     stages {
+        // REMOVE THIS ENTIRE STAGE - IT IS REDUNDANT
+        /*
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/NasriMohamedHedi/JobBoard.git', credentialsId: 'github-token'
             }
         }
+        */
 
-            stage('Build & Test All Microservices') {
-        steps {
-            script {
-                def microservices = ["eureka", "gateway", "candidat", "candidature", "job", "meeting", "notification"]
+        stage('Build & Test All Microservices') {
+            steps {
+                // We must explicitly check out the code here
+                git branch: 'main', url: 'https://github.com/NasriMohamedHedi/JobBoard.git', credentialsId: 'github-token'
                 
-                for (service in microservices) {
-                    echo "Building and testing microservice: ${service}"
-                    // Use 'sh' with 'cd' to change directory and run the command in one step
-                    sh "cd backEnd/microservices/${service} && mvn clean install"
+                script {
+                    def microservices = ["eureka", "gateway", "candidat", "candidature", "job", "meeting", "notification"]
+                    
+                    for (service in microservices) {
+                        echo "Building and testing microservice: ${service}"
+                        // Now that we are sure the code is checked out, this should work
+                        sh "cd backEnd/microservices/${service} && mvn clean install"
+                    }
+                }
+            }
+            post {
+                always {
+                    junit 'backEnd/**/target/surefire-reports/*.xml'
                 }
             }
         }
-        post {
-            always {
-                junit 'backEnd/**/target/surefire-reports/*.xml'
-            }
-        }
-    }
+
+
 
         stage('Secrets Scan (Gitleaks)') {
             steps {
