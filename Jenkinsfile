@@ -3,9 +3,9 @@ pipeline {
     agent any
 
     tools {
-    // These names MUST match the names you set in Manage Jenkins -> Tools
-    maven 'Maven-3.9'  
-    jdk 'JDK-21'        
+    // Use the generic names that Jenkins recognizes by default
+    maven 'maven' 
+    jdk 'JAVA_HOME'
 }
     environment {
         // This will automatically fetch the secret text credential we created in Jenkins
