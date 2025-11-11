@@ -1,6 +1,11 @@
 // Jenkinsfile for JobBoard - Multi-Module Microservices DevSecOps
 pipeline {
     agent any
+    
+     options {
+        // This will clean the workspace before the build starts
+        cleanWs()
+    }
 
     tools {
         // Use the default names that Jenkins recognizes
