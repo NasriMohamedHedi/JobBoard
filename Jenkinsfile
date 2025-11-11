@@ -20,25 +20,24 @@ pipeline {
             }
         }
 
-        stage('Build & Test All Microservices') {
-            steps {
-                script {
-                    def microservices = ["eureka", "gateway", "candidat", "candidature", "job", "meeting", "notification"]
-                    
-                    for (service in microservices) {
-                        echo "Building and testing microservice: ${service}"
-                        dir("backEnd/microservices/${service}") {
-                            sh 'mvn clean install'
-                        }
-                    }
-                }
-            }
-            post {
-                always {
-                    junit 'backEnd/**/target/surefire-reports/*.xml'
+            stage('Build & Test All Microservices') {
+        steps {
+            script {
+                def microservices = ["eureka", "gateway", "candidat", "candidature", "job", "meeting", "notification"]
+                
+                for (service in microservices) {
+                    echo "Building and testing microservice: ${service}"
+                    // Use 'sh' with 'cd' to change directory and run the command in one step
+                    sh "cd backEnd/microservices/${service} && mvn clean install"
                 }
             }
         }
+        post {
+            always {
+                junit 'backEnd/**/target/surefire-reports/*.xml'
+            }
+        }
+    }
 
         stage('Secrets Scan (Gitleaks)') {
             steps {
