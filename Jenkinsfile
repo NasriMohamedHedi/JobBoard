@@ -1,7 +1,6 @@
-//// Jenkinsfile for JobBoard - Multi-Module Microservices DevSecOps
+// Jenkinsfile for JobBoard - Multi-Module Microservices DevSecOps
 pipeline {
     agent any
-
 
     options {
         // This prevents Jenkins from doing its own default checkout
@@ -18,38 +17,32 @@ pipeline {
     }
 
     stages {
-        // REMOVE THIS ENTIRE STAGE - IT IS REDUNDANT
-        /*
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/NasriMohamedHedi/JobBoard.git', credentialsId: 'github-token'
-            }
-        }
-        */
-
         stage('Build & Test All Microservices') {
             steps {
-                // We must explicitly check out the code here
+                // First, checkout the code
                 git branch: 'main', url: 'https://github.com/NasriMohamedHedi/JobBoard.git', credentialsId: 'github-token'
-                
+
+                // The 'for' loop must be inside a 'script' block
                 script {
                     def microservices = ["eureka", "gateway", "candidat", "candidature", "job", "meeting", "notification"]
                     
                     for (service in microservices) {
                         echo "Building and testing microservice: ${service}"
-                        // Now that we are sure the code is checked out, this should work
-                        sh "cd backEnd/microservices/${service} && mvn clean install"
+                        // Use a full path with shell command to be 100% explicit
+                        sh """
+                        cd "${WORKSPACE}/backEnd/microservices/${service}"
+                        mvn clean install
+                        """
                     }
                 }
             }
+            // The 'post' block for junit must be inside the 'stage' block
             post {
                 always {
                     junit 'backEnd/**/target/surefire-reports/*.xml'
                 }
             }
         }
-
-
 
         stage('Secrets Scan (Gitleaks)') {
             steps {
@@ -87,6 +80,7 @@ pipeline {
         }
     }
     
+    // This is the main 'post' block that runs at the end of the entire pipeline
     post {
         always {
             echo 'Pipeline finished. Cleaning workspace.'
