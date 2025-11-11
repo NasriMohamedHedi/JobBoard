@@ -3,11 +3,10 @@ pipeline {
     agent any
 
     tools {
-        // These names MUST match the names you set in Manage Jenkins -> Tools
-        maven 'Maven-3.9' 
-        jdk 'JDK-21'
-    }
-
+    // These names MUST match the names you set in Manage Jenkins -> Tools
+    maven 'Maven-3.9'  
+    jdk 'JDK-21'        
+}
     environment {
         // This will automatically fetch the secret text credential we created in Jenkins
         SONAR_AUTH_TOKEN = credentials('sonarqube-token') 
